@@ -12,6 +12,8 @@ import pingouin as pg
 wdir = r"C:\Users\tiama\OneDrive\Documentos\Maestría en minería y exploración de datos\Taller de Tesis 1\TT1"
 os.chdir(wdir)
 
-spectredf = pd.read_csv('Datos procesados/spc24Oct2019/Minería.csv', sep = ';', decimal = ',').query("Group == '04_02'").drop(columns = ['Group','Sample','File'])
+spectredf = pd.read_csv('Datos procesados/spc24Oct2019/Minería.csv', sep = ';', decimal = ',').drop(columns = ['Group','File'])
+#.query("Group == '04_02'").drop(columns = ['Group','Sample','File'])
 
-pg.multivariate_normality(spectredf, alpha=.05)
+#pg.multivariate_normality(spectredf, alpha=.05)
+spectredf.groupby(by = ['Sample']).apply(lambda x: pg.multivariate_normality(x))
