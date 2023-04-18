@@ -6,6 +6,8 @@ setwd("C://Users//tiama//OneDrive//Documentos//Maestría en minería y exploraci
 
 df <- read.csv2("spc24Oct2019/Minería.csv")
 
+#PCA general
+
 pca <- df %>% 
   select(where(is.numeric)) %>%
   prcomp()
@@ -31,3 +33,53 @@ autoplot(pca, data = df, colour = 'Group', alpha = 0.5)#, loadings = FALSE,
 pcar <- robpca(df %>% select(where(is.numeric)), k=10)
 
 #screeplot(pcar, type = "l", npcs = 10)
+prop_variance_r <- pcar$eigenvalues / sum(pcar$eigenvalues)
+prop_variance_cum_r <- cumsum(prop_variance_r)
+
+ggplot(data = data.frame(prop_variance_cum_r, pc = 1:10), 
+       aes(x = pc, y = prop_variance_cum_r, group = 1)) +
+  geom_col(width = 0.3, fill = 'slateblue3') +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+pcar$scores %>%
+  ggplot(aes(x = PC1, y = PC2, color = df$Group)) +
+  geom_point()
+
+#PCA por grupo
+
+pca_g1 <- df %>% 
+  filter(Group == "04_02") %>%
+  select(where(is.numeric)) %>%
+  prcomp()
+  
+prop_variance_g1 <- pca_g1$sdev^2 / sum(pca_g1$sdev^2)
+prop_variance_cum_g1 <- cumsum(prop_variance_g1)
+  
+ggplot(data = data.frame(prop_variance_cum_g1, pc = 1:40), 
+         aes(x = pc, y = prop_variance_cum_g1, group = 1)) +
+geom_col(width = 0.3, fill = 'slateblue3') +
+theme_bw() +
+    labs(x = "Componente principal",
+         y = "Prop. varianza explicada acumulada")
+  
+autoplot(pca_g1, data = df %>% filter(Group == "04_02"), colour = 'Group', alpha = 0.5)
+
+pcar_g1 <- robpca(df %>% filter(Group == "04_02") %>% select(where(is.numeric)))
+
+prop_variance_r_g1 <- pcar_g1$eigenvalues / sum(pcar_g1$eigenvalues)
+prop_variance_cum_r_g1 <- cumsum(prop_variance_r_g1)
+
+ggplot(data = data.frame(prop_variance_cum_r_g1, pc = 1:pcar_g1$k), 
+       aes(x = pc, y = prop_variance_cum_r_g1, group = 1)) +
+  geom_col(width = 0.3, fill = 'slateblue3') +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+pcar_g1$scores %>%
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_point(color = rep(c(1,2), each = 20)) #esto es para darle un color a cada grupo de muestras, es poco elegante
+
+diagPlot(pcar_g1, id = 3)
