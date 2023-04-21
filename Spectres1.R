@@ -13,26 +13,22 @@ df_long <- df %>%
 
 title_string <- function(file)
 {
-  # df_row <- df %>%
-  #   filter(File == file) %>%
-  #   transmute(title = paste("Group:",Group,", Group_number:",Group_number,", Sample:",Sample,", File: ",File))
-  # df_row$title
   df %>%
     filter(File == file) %>%
     transmute(title = paste("Group:",Group,", Group_number:",Group_number,", Sample:",Sample,", File: ",File)) %$%
     title
 }
 
-#Prueba con un solo espectro
-df_long %>% 
-  filter(File == "M14_01.csv") %>%
-  ggplot(aes(x = Wavelength, y = Intensity)) + 
-  geom_line() +
-  ggtitle(title_string("M14_01.csv"))
-
-for (F in unique(df$File)) {
-  print(title_string(F))
-}
+# #Prueba con un solo espectro
+# df_long %>% 
+#   filter(File == "M14_01.csv") %>%
+#   ggplot(aes(x = Wavelength, y = Intensity)) + 
+#   geom_line() +
+#   ggtitle(title_string("M14_01.csv"))
+# 
+# for (F in unique(df$File)) {
+#   print(title_string(F))
+# }
 
 pdf("spc24Oct2019/espectros.pdf")
 

@@ -82,4 +82,6 @@ pcar_g1$scores %>%
   ggplot(aes(x = PC1, y = PC2)) +
   geom_point(color = rep(c(1,2), each = 20)) #esto es para darle un color a cada grupo de muestras, es poco elegante
 
-diagPlot(pcar_g1, id = 3)
+diagPlot(pcar_g1, id = 4) #4,13,17,37
+
+sum(pcar_g1$flag.all) #cantidad de mediciones que no son atípicas
