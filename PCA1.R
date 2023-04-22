@@ -48,7 +48,7 @@ pcar$scores %>%
   geom_point()
 
 #PCA por grupo
-
+#grupo 1
 pca_g1 <- df %>% 
   filter(Group == "04_02") %>%
   select(where(is.numeric)) %>%
@@ -64,7 +64,7 @@ theme_bw() +
     labs(x = "Componente principal",
          y = "Prop. varianza explicada acumulada")
   
-autoplot(pca_g1, data = df %>% filter(Group == "04_02"), colour = 'Group', alpha = 0.5)
+autoplot(pca_g1, data = df %>% filter(Group == "04_02"), colour = 'Sample', alpha = 0.5)
 
 pcar_g1 <- robpca(df %>% filter(Group == "04_02") %>% select(where(is.numeric)))
 
@@ -85,3 +85,117 @@ pcar_g1$scores %>%
 diagPlot(pcar_g1, id = 4) #4,13,17,37
 
 sum(pcar_g1$flag.all) #cantidad de mediciones que no son atípicas
+
+#grupo 2
+pca_g2 <- df %>% 
+  filter(Group == "05_01") %>%
+  select(where(is.numeric)) %>%
+  prcomp()
+
+prop_variance_g2 <- pca_g2$sdev^2 / sum(pca_g2$sdev^2)
+prop_variance_cum_g2 <- cumsum(prop_variance_g2)
+
+ggplot(data = data.frame(prop_variance_cum_g2, pc = 1:36), 
+       aes(x = pc, y = prop_variance_cum_g2, group = 1)) +
+  geom_col(width = 0.3, fill = 'slateblue3') +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+autoplot(pca_g2, data = df %>% filter(Group == "05_01"), colour = 'Sample', alpha = 0.5)
+
+pcar_g2 <- robpca(df %>% filter(Group == "05_01") %>% select(where(is.numeric)))
+
+prop_variance_r_g2 <- pcar_g2$eigenvalues / sum(pcar_g2$eigenvalues)
+prop_variance_cum_r_g2 <- cumsum(prop_variance_r_g2)
+
+ggplot(data = data.frame(prop_variance_cum_r_g2, pc = 1:pcar_g2$k), 
+       aes(x = pc, y = prop_variance_cum_r_g2, group = 1)) +
+  geom_col(width = 0.3, fill = 'slateblue3') +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+pcar_g2$scores %>%
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_point(color = c(rep(1,times = 16),rep(2,times = 20))) #esto es para darle un color a cada grupo de muestras, es poco elegante
+
+diagPlot(pcar_g2, id = 7) #2,4,5,9,24,26,30,31
+
+sum(pcar_g2$flag.all) #cantidad de mediciones que no son atípicas
+
+#grupo 3
+pca_g3 <- df %>% 
+  filter(Group == "09_02") %>%
+  select(where(is.numeric)) %>%
+  prcomp()
+
+prop_variance_g3 <- pca_g3$sdev^2 / sum(pca_g3$sdev^2)
+prop_variance_cum_g3 <- cumsum(prop_variance_g3)
+
+ggplot(data = data.frame(prop_variance_cum_g3, pc = 1:40), 
+       aes(x = pc, y = prop_variance_cum_g3, group = 1)) +
+  geom_col(width = 0.3, fill = 'slateblue3') +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+autoplot(pca_g3, data = df %>% filter(Group == "09_02"), colour = 'Sample', alpha = 0.5)
+
+pcar_g3 <- robpca(df %>% filter(Group == "09_02") %>% select(where(is.numeric)))
+
+prop_variance_r_g3 <- pcar_g3$eigenvalues / sum(pcar_g3$eigenvalues)
+prop_variance_cum_r_g3 <- cumsum(prop_variance_r_g3)
+
+ggplot(data = data.frame(prop_variance_cum_r_g3, pc = 1:pcar_g3$k), 
+       aes(x = pc, y = prop_variance_cum_r_g3, group = 1)) +
+  geom_col(width = 0.3, fill = 'slateblue3') +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+#pcar_g3$scores %>%
+#  ggplot(aes(x = PC1, y = PC2)) +
+#  geom_point(color = rep(c(1,2), each = 20)) #esto es para darle un color a cada grupo de muestras, es poco elegante
+
+diagPlot(pcar_g3, id = 1) #12, 32
+
+sum(pcar_g3$flag.all) #cantidad de mediciones que no son atípicas
+
+#grupo 4
+pca_g4 <- df %>% 
+  filter(Group == "12_02") %>%
+  select(where(is.numeric)) %>%
+  prcomp()
+
+prop_variance_g4 <- pca_g4$sdev^2 / sum(pca_g4$sdev^2)
+prop_variance_cum_g4 <- cumsum(prop_variance_g4)
+
+ggplot(data = data.frame(prop_variance_cum_g4, pc = 1:40), 
+       aes(x = pc, y = prop_variance_cum_g4, group = 1)) +
+  geom_col(width = 0.3, fill = 'slateblue3') +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+autoplot(pca_g4, data = df %>% filter(Group == "12_02"), colour = 'Sample', alpha = 0.5)
+
+pcar_g4 <- robpca(df %>% filter(Group == "12_02") %>% select(where(is.numeric)))
+
+prop_variance_r_g4 <- pcar_g4$eigenvalues / sum(pcar_g4$eigenvalues)
+prop_variance_cum_r_g4 <- cumsum(prop_variance_r_g4)
+
+ggplot(data = data.frame(prop_variance_cum_r_g4, pc = 1:pcar_g4$k), 
+       aes(x = pc, y = prop_variance_cum_r_g4, group = 1)) +
+  geom_col(width = 0.3, fill = 'slateblue3') +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+pcar_g4$scores %>%
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_point(color = rep(c(1,2), each = 20)) #esto es para darle un color a cada grupo de muestras, es poco elegante
+
+diagPlot(pcar_g4, id = 4) #18,28,29,30,33,36
+
+sum(pcar_g4$flag.all) #cantidad de mediciones que no son atípicas
