@@ -30,13 +30,13 @@ ggplot(data = data.frame(prop_variance_cum, pc = 1:156),
 autoplot(pca, data = df, colour = 'Group', alpha = 0.5)#, loadings = FALSE, 
          #loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 3)
 
-pcar <- robpca(df %>% select(where(is.numeric)), k=10)
+pcar <- robpca(df %>% select(where(is.numeric)), k = 2)
 
 #screeplot(pcar, type = "l", npcs = 10)
 prop_variance_r <- pcar$eigenvalues / sum(pcar$eigenvalues)
 prop_variance_cum_r <- cumsum(prop_variance_r)
 
-ggplot(data = data.frame(prop_variance_cum_r, pc = 1:10), 
+ggplot(data = data.frame(prop_variance_cum_r, pc = 1:pcar$k), 
        aes(x = pc, y = prop_variance_cum_r, group = 1)) +
   geom_col(width = 0.3, fill = 'slateblue3') +
   theme_bw() +
@@ -199,3 +199,27 @@ pcar_g4$scores %>%
 diagPlot(pcar_g4, id = 4) #18,28,29,30,33,36
 
 sum(pcar_g4$flag.all) #cantidad de mediciones que no son atípicas
+
+
+#PCA robusto con outliers removidos (gracias a que encontré todos los outlieres con los gráficos de diagnóstico)
+
+outlier_list <- c("M14_04.csv","M14_13.csv","M14_17.csv","M2_17.csv","M6_02.csv","M6_04.csv","M6_05.csv","M6_09.csv",
+                  "M9_08.csv","M9_10.csv","M9_14.csv","M6_15.csv","M8_12.csv","M13_12.csv","M4_18.csv","M5_08.csv",
+                  "M5_09.csv","M5_10.csv","M5_13.csv","M5_16.csv")
+
+pcarb <- robpca(df %>% filter(!File %in% outlier_list) %>% select(where(is.numeric)), k = 2)
+
+prop_variance_rb <- pcarb$eigenvalues / sum(pcarb$eigenvalues)
+prop_variance_cum_rb <- cumsum(prop_variance_rb)
+
+ggplot(data = data.frame(prop_variance_cum_rb, pc = 1:pcarb$k), 
+       aes(x = pc, y = prop_variance_cum_rb, group = 1)) +
+  geom_col(width = 0.3, fill = 'slateblue3') +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+pcarb$scores %>%
+  ggplot(aes(x = PC1, y = PC2, color = df %>% filter(!File %in% outlier_list) %$% Group)) +
+  geom_point() +
+  labs(color = 'Group')
