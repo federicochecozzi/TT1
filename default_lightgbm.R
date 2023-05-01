@@ -1,12 +1,23 @@
 library(tidymodels)
 library(tidyverse)
 require(lightgbm)
+library(rospca)
+
+projection <- TRUE
+ncomp <- 50 #número de componentes, si es cero el algoritmo elige suficientes componentes para sumar el 90% de la varianza
+seed <-277 #original: 911
 
 setwd("C://Users//tiama//OneDrive//Documentos//Maestría en minería y exploración de datos//Taller de Tesis 1//TT1//Datos procesados")
 
-df <- read.csv2("spc24Oct2019/Minería.csv") 
+df <- read.csv2("spc24Oct2019/Minería.csv")
 
-set.seed(911)
+if(projection){
+  pcar <- robpca(df %>% select(where(is.numeric)), k = ncomp, kmax = 156)
+  df <-  df %>% select(negate(where(is.numeric))) %>%
+    bind_cols(pcar$scores)
+}
+
+set.seed(seed)
 
 df_split <- initial_split(df,
                           prop = 0.8)

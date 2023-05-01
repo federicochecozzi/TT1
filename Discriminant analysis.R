@@ -3,6 +3,8 @@ library(mvnormtest)
 library(MASS)
 library(tidyverse)
 
+seed <- 307 #original: 911, 277
+
 setwd("C://Users//tiama//OneDrive//Documentos//Maestría en minería y exploración de datos//Taller de Tesis 1//TT1//Datos procesados")
 
 df <- read.csv2("spc24Oct2019/Minería.csv") 
