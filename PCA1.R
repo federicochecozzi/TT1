@@ -1,6 +1,7 @@
 library(tidyverse)
 library(ggfortify)
 library(rospca)
+library(magrittr)
 
 setwd("C://Users//tiama//OneDrive//Documentos//Maestría en minería y exploración de datos//Taller de Tesis 1//TT1//Datos procesados")
 
@@ -45,7 +46,8 @@ ggplot(data = data.frame(prop_variance_cum_r, pc = 1:pcar$k),
 
 pcar$scores %>%
   ggplot(aes(x = PC1, y = PC2, color = df$Group)) +
-  geom_point()
+  geom_point() +
+  labs(color = "Group")
 
 #PCA por grupo
 #grupo 1
@@ -142,7 +144,8 @@ ggplot(data = data.frame(prop_variance_cum_g3, pc = 1:40),
 
 autoplot(pca_g3, data = df %>% filter(Group == "09_02"), colour = 'Sample', alpha = 0.5)
 
-pcar_g3 <- robpca(df %>% filter(Group == "09_02") %>% select(where(is.numeric)))
+#aparentemente basta con un componente para capturar más del 90% de la varianza
+pcar_g3 <- robpca(df %>% filter(Group == "09_02") %>% select(where(is.numeric)), k = 2)
 
 prop_variance_r_g3 <- pcar_g3$eigenvalues / sum(pcar_g3$eigenvalues)
 prop_variance_cum_r_g3 <- cumsum(prop_variance_r_g3)
@@ -154,11 +157,12 @@ ggplot(data = data.frame(prop_variance_cum_r_g3, pc = 1:pcar_g3$k),
   labs(x = "Componente principal",
        y = "Prop. varianza explicada acumulada")
 
-#pcar_g3$scores %>%
-#  ggplot(aes(x = PC1, y = PC2)) +
-#  geom_point(color = rep(c(1,2), each = 20)) #esto es para darle un color a cada grupo de muestras, es poco elegante
+#usar con k = 2
+pcar_g3$scores %>%
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_point(color = rep(c(1,2), each = 20)) #esto es para darle un color a cada grupo de muestras, es poco elegante
 
-diagPlot(pcar_g3, id = 1) #12, 32
+diagPlot(pcar_g3, id = 2) #12, 32
 
 sum(pcar_g3$flag.all) #cantidad de mediciones que no son atípicas
 
@@ -204,7 +208,7 @@ sum(pcar_g4$flag.all) #cantidad de mediciones que no son atípicas
 #PCA robusto con outliers removidos (gracias a que encontré todos los outlieres con los gráficos de diagnóstico)
 
 outlier_list <- c("M14_04.csv","M14_13.csv","M14_17.csv","M2_17.csv","M6_02.csv","M6_04.csv","M6_05.csv","M6_09.csv",
-                  "M9_08.csv","M9_10.csv","M9_14.csv","M6_15.csv","M8_12.csv","M13_12.csv","M4_18.csv","M5_08.csv",
+                  "M9_08.csv","M9_10.csv","M9_14.csv","M9_15.csv","M8_12.csv","M13_12.csv","M4_18.csv","M5_08.csv",
                   "M5_09.csv","M5_10.csv","M5_13.csv","M5_16.csv")
 
 pcarb <- robpca(df %>% filter(!File %in% outlier_list) %>% select(where(is.numeric)), k = 2)
