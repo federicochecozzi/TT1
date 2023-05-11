@@ -1,5 +1,7 @@
+library(vegan)
 library(tidymodels)
-library(mvnormtest)
+#library(mvnormtest)
+library(mvnTest)
 library(MASS)
 library(tidyverse)
 
@@ -25,7 +27,17 @@ df_test <- df_split %>%
 #  filter(Group == '04_02') %>%
 #  dplyr::select(where(is.numeric)) %>%
 #  t() %>% mshapiro.test()
+df %>%
+  filter(Group == '04_02') %>%
+  dplyr::select(where(is.numeric)) %>%
+  HZ.test()
 
+test_levene <- df %>% 
+  dplyr::select(where(is.numeric)) %>%
+  dist(method = 'euclidean') %>%
+  vegan::betadisper(df$Group, type = c("median","centroid"), bias.adjust = T,sqrt.dist = FALSE, add = FALSE) %>%
+  anova()
+cat(paste("p-value <",test_levene$`Pr(>F)`[1]))
 
 #LDA
 model_lda <- lda(Group~., data = df_train %>% dplyr::select(-c(Sample,File)))
