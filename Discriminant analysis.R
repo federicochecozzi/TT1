@@ -27,10 +27,12 @@ df_test <- df_split %>%
 #  filter(Group == '04_02') %>%
 #  dplyr::select(where(is.numeric)) %>%
 #  t() %>% mshapiro.test()
-df %>%
-  filter(Group == '04_02') %>%
-  dplyr::select(where(is.numeric)) %>%
-  HZ.test()
+
+#ridículamente lento, pero permite ver el p valor en vez de obtener un nan
+#df %>%
+#  filter(Group == '04_02') %>%
+#  dplyr::select(where(is.numeric)) %>%
+#  HZ.test()
 
 test_levene <- df %>% 
   dplyr::select(where(is.numeric)) %>%
