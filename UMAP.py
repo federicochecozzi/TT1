@@ -10,6 +10,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib as mpl
+import seaborn as sns
 from umap import UMAP
 
 wdir = r"C:\Users\tiama\OneDrive\Documentos\Maestría en minería y exploración de datos\Taller de Tesis 1\TT1"
@@ -30,9 +31,13 @@ color_dict = {
     "12_02": 3
     }
 
-um = UMAP(n_neighbors=100)
-Xred = um.fit_transform(X)
+um = UMAP()
+Xred = um.fit_transform(X) \
 
 #Pasar a seaborn, esto luce feo
 plt.scatter(Xred[:,0],Xred[:,1],c=[color_dict[s] for s in list(y)],cmap=plt.cm.Set1,alpha=0.7)
 plt.colorbar(ticks=range(4));
+
+sns.scatterplot(x = Xred[:,0],y = Xred[:,1], hue = y,alpha=0.7)
+plt.xlabel("Primera dimensión")
+plt.ylabel("Segunda dimensión")
