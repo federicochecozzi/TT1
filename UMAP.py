@@ -12,6 +12,9 @@ import matplotlib.cm as cm
 import matplotlib as mpl
 import seaborn as sns
 from umap import UMAP
+import time
+
+seeds = [911, 277, 307, 349, 101]
 
 wdir = r"C:\Users\tiama\OneDrive\Documentos\Maestría en minería y exploración de datos\Taller de Tesis 1\TT1"
 os.chdir(wdir)
@@ -31,13 +34,23 @@ color_dict = {
     "12_02": 3
     }
 
-um = UMAP()
-Xred = um.fit_transform(X) \
+seed = seeds[4]
+
+start = time.time()
+
+um = UMAP()#random_state = seed)
+Xred = um.fit_transform(X) 
+end = time.time()
+print('Execution time is:')
+print(end - start)
 
 #Pasar a seaborn, esto luce feo
-plt.scatter(Xred[:,0],Xred[:,1],c=[color_dict[s] for s in list(y)],cmap=plt.cm.Set1,alpha=0.7)
-plt.colorbar(ticks=range(4));
+#plt.scatter(Xred[:,0],Xred[:,1],c=[color_dict[s] for s in list(y)],cmap=plt.cm.Set1,alpha=0.7)
+#plt.colorbar(ticks=range(4));
 
 sns.scatterplot(x = Xred[:,0],y = Xred[:,1], hue = y,alpha=0.7)
 plt.xlabel("Primera dimensión")
 plt.ylabel("Segunda dimensión")
+
+df_umap = pd.DataFrame({'dim1': Xred[:,0], 'dim2': Xred[:,1], 'Group': y})
+df_umap.to_csv('Datos procesados/spc24Oct2019/Minería_UMAP.csv', sep = ';', decimal = ',', index = False)

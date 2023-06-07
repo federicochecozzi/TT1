@@ -14,7 +14,7 @@ setwd("C://Users//tiama//OneDrive//Documentos//Maestría en minería y exploraci
 df <- read.csv2("spc24Oct2019/Minería_PCAR.csv") 
 
 #usar solo con QDA
-df <- df[1:23]
+#df <- df[1:23]
 
 #Entrenamiento y predicción
 set.seed(seeds[1])
@@ -33,7 +33,7 @@ df_test <- df_split %>%
 #LDA
 start_time <- Sys.time()
 
-model_lda <- lda(Group~., data = df_train %>% dplyr::select(-c(Sample,File)))
+model_lda <- lda(Group~., data = df_train %>% dplyr::select(-c(Sample,File)))#, prior = c(40/156,36/156,40/156,40/156))
 predictions <- model_lda %>% predict(df_test)
 
 end_time <- Sys.time()
@@ -61,7 +61,7 @@ ggplot(lda.data, aes(LD1, LD2)) +
 #QDA
 start_time <- Sys.time()
 
-model_qda <- qda(Group~., data = df_train %>% dplyr::select(-c(Sample,File)))
+model_qda <- qda(Group~., data = df_train %>% dplyr::select(-c(Sample,File)))#, prior = c(40/156,36/156,40/156,40/156))
 predictions <- model_qda %>% predict(df_test)
 
 end_time <- Sys.time()
