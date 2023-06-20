@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Apr 29 20:31:23 2023
+Created on Sat Jun 10 22:14:44 2023
 
 @author: Federico Checozzi
 """
@@ -28,7 +28,7 @@ os.chdir(wdir)
 df = pd.read_csv(file, sep = ';', header = 0, decimal = ',')
 df = df.rename(columns = lambda x:re.sub('[^A-Za-z0-9_]+', '', x))
 
-seed = seeds[1]
+seed = seeds[4]
 X_train, X_test, Y_train, Y_test = train_test_split(df.select_dtypes([np.number]), df.Group, test_size=0.2, random_state=seed)
 
 start = time.time()
@@ -50,12 +50,12 @@ parameters = {'num_leaves': [2,4,8,16,32,64,128],
               #'feature_fraction': uniform(loc=0.2, scale=0.8),
               #'min_data_in_leaf': [1,2,4,8,16,32],
               'min_child_samples': [16,20,24,28,32,36],
-              'learning_rate': uniform(loc=0.005, scale=0.295),
-              #'n_estimators': [50,100,250,500],
-              #'reg_alpha': [0,0.05,0.1,0.15],
-              #'reg_lambda': [0,0.05,0.1,0.15],
-              'n_jobs': [-1],
-              'random_state': [seed]}
+             'learning_rate': uniform(loc=0.005, scale=0.095),
+             #'n_estimators': [50,100,250,500],
+             'reg_alpha': [0,0.05,0.1,0.15],
+             #'reg_lambda': [0,0.05,0.1,0.15],
+             'n_jobs': [-1],
+             'random_state': [seed]}
 clf=RandomizedSearchCV(lgbm,parameters,scoring='accuracy', n_iter = 500, random_state=seed, verbose = 2)
 clf.fit(X=X_train, y=Y_train)
 print(clf.best_params_)
@@ -78,28 +78,3 @@ sns.heatmap(cm,annot=True,fmt='g', cbar = False)
 plt.xlabel('Pred')
 plt.ylabel('Real');
 
-#{'feature_fraction': 0.9630324699363759, 'learning_rate': 0.27610794631607066, 'min_data_in_leaf': 4, 'num_leaves': 128}
-#0.9375
-
-#Feature importance for top 50 predictors
-#predictors = [x for x in X_train.columns]
-#feat_imp = pd.Series(grid.best_estimator_.feature_importances_, predictors).sort_values(ascending=False)
-#feat_imp = feat_imp[0:50]
-#plt.rcParams['figure.figsize'] = 20, 5
-#feat_imp.plot(kind='bar', title='Feature Importance')
-#plt.ylabel('Feature Importance Score')
-
-# =============================================================================
-# parameters = {'num_leaves': [2,4,8,16,32,64,128], 
-#               #en el caso de tener pocos features usar la lista y no la distribución 
-#               'colsample_bytree': [0.5,1],
-#               #'feature_fraction': uniform(loc=0.2, scale=0.8),
-#               #'min_data_in_leaf': [1,2,4,8,16,32],
-#               'min_child_samples': [16,20,24,28,32,36],
-#              'learning_rate': uniform(loc=0.005, scale=0.295),
-#              #'n_estimators': [50,100,250,500],
-#              #'reg_alpha': [0,0.05,0.1,0.15],
-#              #'reg_lambda': [0,0.05,0.1,0.15],
-#              'n_jobs': [-1],
-#              'random_state': [seed]}
-# =============================================================================

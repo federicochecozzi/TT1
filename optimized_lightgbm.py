@@ -10,6 +10,8 @@ Created on Sat Apr 29 20:31:23 2023
 import pandas as pd
 import numpy as np
 import os
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 import time
 import lightgbm as lgb
@@ -19,14 +21,14 @@ import re
 
 seeds = [911, 277, 307, 349, 101]
 
-file = "Minería_PCAR.csv" #"Minería.csv","Minería_SOM.csv"
+file = "Minería.csv" 
 wdir = r"C:\Users\tiama\OneDrive\Documentos\Maestría en minería y exploración de datos\Taller de Tesis 1\TT1\Datos procesados\spc24Oct2019"
 os.chdir(wdir)
 
 df = pd.read_csv(file, sep = ';', header = 0, decimal = ',')
 df = df.rename(columns = lambda x:re.sub('[^A-Za-z0-9_]+', '', x))
 
-seed = seeds[4]
+seed = seeds[0]
 X_train, X_test, Y_train, Y_test = train_test_split(df.select_dtypes([np.number]), df.Group, test_size=0.2, random_state=seed)
 
 start = time.time()
@@ -60,5 +62,13 @@ print(end - start)
 
 results = pd.DataFrame.from_dict(clf.cv_results_)
 
-#{'feature_fraction': 0.9630324699363759, 'learning_rate': 0.27610794631607066, 'min_data_in_leaf': 4, 'num_leaves': 128}
-#0.9375
+cm = pd.DataFrame(confusion_matrix(Y_test, predicted), columns = ['04_02', '05_01', '09_02', '12_02'], index = ['04_02', '05_01', '09_02', '12_02'])
+cm = cm.loc[['04_02', '05_01', '09_02', '12_02'],['04_02', '05_01', '09_02', '12_02']]
+
+sns.set(font_scale=1.5)
+
+sns.heatmap(cm,annot=True,fmt='g', cbar = False)
+plt.xlabel('Pred')
+plt.ylabel('Real');
+
+#{'feature_fraction': 0.8920798530546625, 'learning_rate': 0.2499319250986451, 'min_data_in_leaf': 2, 'num_leaves': 16}

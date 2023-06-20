@@ -82,8 +82,8 @@ ggplot(data = data.frame(prop_variance_cum_r_g1, pc = 1:pcar_g1$k),
 
 pcar_g1$scores %>%
   ggplot(aes(x = PC1, y = PC2)) +
-  geom_point(color = rep(c(1,2), each = 20)) #esto es para darle un color a cada grupo de muestras, es poco elegante
-
+  geom_point(color = rep(c(1,2), each = 20)) + #esto es para darle un color a cada grupo de muestras, es poco elegante
+  theme(text = element_text(size = 20)) 
 diagPlot(pcar_g1, id = 4) #4,13,17,37
 
 sum(pcar_g1$flag.all) #cantidad de mediciones que no son atípicas
@@ -120,8 +120,9 @@ ggplot(data = data.frame(prop_variance_cum_r_g2, pc = 1:pcar_g2$k),
 
 pcar_g2$scores %>%
   ggplot(aes(x = PC1, y = PC2)) +
-  geom_point(color = c(rep(1,times = 16),rep(2,times = 20))) #esto es para darle un color a cada grupo de muestras, es poco elegante
-
+  geom_point(color = c(rep(1,times = 16),rep(2,times = 20))) + #esto es para darle un color a cada grupo de muestras, es poco elegante
+  theme(text = element_text(size = 20))
+  
 diagPlot(pcar_g2, id = 7) #2,4,5,9,24,26,30,31
 
 sum(pcar_g2$flag.all) #cantidad de mediciones que no son atípicas
@@ -160,7 +161,8 @@ ggplot(data = data.frame(prop_variance_cum_r_g3, pc = 1:pcar_g3$k),
 #usar con k = 2
 pcar_g3$scores %>%
   ggplot(aes(x = PC1, y = PC2)) +
-  geom_point(color = rep(c(1,2), each = 20)) #esto es para darle un color a cada grupo de muestras, es poco elegante
+  geom_point(color = rep(c(1,2), each = 20)) + #esto es para darle un color a cada grupo de muestras, es poco elegante
+  theme(text = element_text(size = 20))
 
 diagPlot(pcar_g3, id = 2) #12, 32
 
@@ -198,7 +200,8 @@ ggplot(data = data.frame(prop_variance_cum_r_g4, pc = 1:pcar_g4$k),
 
 pcar_g4$scores %>%
   ggplot(aes(x = PC1, y = PC2)) +
-  geom_point(color = rep(c(1,2), each = 20)) #esto es para darle un color a cada grupo de muestras, es poco elegante
+  geom_point(color = rep(c(1,2), each = 20)) + #esto es para darle un color a cada grupo de muestras, es poco elegante
+  theme(text = element_text(size = 20))
 
 diagPlot(pcar_g4, id = 4) #18,28,29,30,33,36
 
@@ -226,4 +229,6 @@ ggplot(data = data.frame(prop_variance_cum_rb, pc = 1:pcarb$k),
 pcarb$scores %>%
   ggplot(aes(x = PC1, y = PC2, color = df %>% filter(!File %in% outlier_list) %$% Group)) +
   geom_point() +
-  labs(color = 'Group')
+  labs(color = 'Group') + 
+  theme(text = element_text(size = 20)) 
+

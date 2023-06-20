@@ -33,7 +33,7 @@ df <- read.csv2("spc24Oct2019/Minería.csv")
 #cat(paste("p-value <",test_levene$`Pr(>F)`[1]))
 
 #Entrenamiento y predicción
-set.seed(seeds[5])
+set.seed(seeds[2])
 
 df_split <- initial_split(df,
                           prop = 0.8)
@@ -59,7 +59,7 @@ end_time - start_time
 #model_lda
 #predictions
 
-table(predictions$class,df_test$Group)
+table(df_test$Group,predictions$class)
 
 measureACC(predictions$class,df_test$Group)
 

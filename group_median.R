@@ -19,7 +19,9 @@ for (G in unique(df$Group)) {
   p <- df_long %>% 
     filter(Group == G) %>%
     ggplot(aes(x = Wavelength, y = Intensity)) + 
-    geom_line()
+    geom_line() +
+    ylim(-10,2750) +
+    theme(text = element_text(size = 20)) 
   print(p)
   dev.off()
 }
