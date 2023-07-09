@@ -49,4 +49,4 @@ tibble(LD1 = predictions$x[,1],LD2 = predictions$x[,2],LD3 = predictions$x[,3], 
   plot_ly(x = ~LD1, y = ~LD2, z = ~LD3) %>%
   layout(
     font = list(size = 20)) %>%
-  add_markers(size = 1, alpha = 0.7, color = ~Group, colors = c('#F8766D', '#7CAE00','#00BFC4','#C77CFF'))
+  add_markers(alpha = 0.7, color = ~Group, colors = c('#F8766D', '#7CAE00','#00BFC4','#C77CFF'))

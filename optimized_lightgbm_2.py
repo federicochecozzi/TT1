@@ -28,7 +28,7 @@ os.chdir(wdir)
 df = pd.read_csv(file, sep = ';', header = 0, decimal = ',')
 df = df.rename(columns = lambda x:re.sub('[^A-Za-z0-9_]+', '', x))
 
-seed = seeds[1]
+seed = seeds[0]
 X_train, X_test, Y_train, Y_test = train_test_split(df.select_dtypes([np.number]), df.Group, test_size=0.2, random_state=seed)
 
 start = time.time()
