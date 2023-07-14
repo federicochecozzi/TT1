@@ -62,7 +62,7 @@ df1_long %>%
 
 df1_long %>% 
   filter(File %in% outliers1) %>% 
-  split(df_long %>% filter(File %in% outliers1) %$% File) %>%
+  split(df1_long %>% filter(File %in% outliers1) %$% File) %>%
   lapply(function(d){
     ggplot(d,aes(x = Wavelength, y = Intensity)) + 
       geom_line() +
@@ -222,6 +222,35 @@ df4_long %>%
       geom_line() +
       theme(legend.position="none") + 
       ylim(-400,700) 
+  })
+
+dev.off()
+
+pdf("spc24Oct2019/spectres_centered_04_02b.pdf")
+
+outliers1 <- c("M14_04.csv","M14_13.csv","M14_17.csv","M2_17.csv")
+
+df1_long %>% 
+  filter(!File %in% outliers1) %>%
+  ggplot(aes(x = Wavelength, y = Intensity, color = File)) + 
+  geom_line() +
+  theme(legend.position="none",
+        text = element_text(size = 20)) + 
+  ylim(-600,600)
+
+dev.off()
+
+pdf("spc24Oct2019/M14_04.pdf")
+
+df1_long %>% 
+  filter(File == "M14_04.csv") %>% 
+  split(df1_long %>% filter(File == "M14_04.csv") %$% File) %>%
+  lapply(function(d){
+    ggplot(d,aes(x = Wavelength, y = Intensity)) + 
+      geom_line() +
+      theme(legend.position="none", 
+            text = element_text(size = 20)) + 
+      ylim(-600,600) 
   })
 
 dev.off()
