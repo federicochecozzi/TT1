@@ -21,7 +21,7 @@ import re
 
 seeds = [911, 277, 307, 349, 101]
 
-file = "Minería_PCA.csv"
+file = "Minería_PCAR.csv"
 wdir = r"C:\Users\tiama\OneDrive\Documentos\Maestría en minería y exploración de datos\Taller de Tesis 1\TT1\Datos procesados\spc24Oct2019"
 os.chdir(wdir)
 
