@@ -138,9 +138,9 @@ Como alternativa a estas, hay técnicas modernas más intensivas computacionalme
 
 \section{Objetivos}
 
-El presente trabajo busca entrenar y comparar clasificadores capaces de diferenciar entre espectros provenientes de muestras de suelo de cuatro tipos diferentes, empleando metodologías clásicas provenientes de la estadística (análisis de componentes principales y análisis discriminante ñineal) así como metodologías modernas provenientes del aprendizaje automático (LightGBM, y se usa de forma auxiliar varias técnicas de reducción dimensional como mapas autoorganizados, y aproximación y proyección uniforme de variedad).
+El presente trabajo busca entrenar y comparar clasificadores capaces de diferenciar entre espectros provenientes de muestras de suelo de cuatro tipos diferentes, empleando metodologías clásicas provenientes de la estadística (análisis de componentes principales y análisis discriminante lineal) así como metodologías modernas provenientes del aprendizaje automático (LightGBM, y se usa de forma auxiliar varias técnicas de reducción dimensional como mapas autoorganizados, y aproximación y proyección uniforme de variedad).
 
-Una meta adicional es una exploración detallada del conjunto de datos utilizado mediante el Análisis de Componentes Principales y tests de hipótesis de las propiedades de los datos, con el objetivo de entender las diferencias entre clases y longitudes de onda más relevantes, así como detectar espectros atípicos y caracterizarlos.
+Una meta adicional es una exploración detallada del conjunto de datos utilizado mediante el análisis de componentes principales y tests de hipótesis de las propiedades de los datos, con el objetivo de entender las diferencias entre clases y longitudes de onda más relevantes, así como detectar espectros atípicos y caracterizarlos.
 
 \section{Datos}
 
@@ -298,7 +298,7 @@ Grupo                        & HZ & p-valor & Normal ($\alpha = 0,05$) \\ \hline
 \label{table:normality}
 \end{table}
 
-La violación de estos supuestos no resulta ser un problema severo en la práctica para los métodos utilizados en este trabajo pero debe tenerse en consideración.
+La violación de estos supuestos no resulta ser un problema severo en la práctica para los métodos utilizados en este trabajo (como se explicará más adelante).
 
 \subsubsection{Análisis de componentes principales}
 
@@ -427,7 +427,7 @@ Antes de entrenar un clasificador, es conveniente aplicar procedimientos de redu
 Los algoritmos empleados con este propósito fueron:
 
 \begin{itemize}
-  \item PCAR: el algoritmo robusto empleado durante la exploración del conjunto de datos también fue utilizado de esta forma. Se buscó extraer la mayor cantidad de componentes principales posibles y almacenarlos en un nuevo archivo para su uso posterior, pero por una cuestión de estabilidad numérica del algoritmo solo se tomaron 90 componentes.
+  \item PCAR: el algoritmo robusto empleado durante la exploración del conjunto de datos también fue utilizado de esta forma. Se buscó extraer la mayor cantidad de componentes principales posibles y almacenarlos en un nuevo archivo para su uso posterior, pero por una cuestión de estabilidad numérica del algoritmo solo se tomaron 90 componentes. También se realizó un PCA tradicional, para hacer comparaciones.
   \item SOM: esta red neuronal genera una representación bidimensional de los datos preservando la estructura topológica. Un gráfico de la proyección de los datos resulta en una grilla cuadrada o rectangular. Los hiperparámetros fueron elegidos siguiendo las propuestas de Tian\cite{Tian2014} y Riese\cite{SuSi} y confirmando visualmente que se obtuvo una proyección sin fallas importantes: una tasa de aprendizaje de $0,3$, una función de vecindad gaussiana, $\sigma = 1$, decaimiento asintótico, una distancia de activación euclidea, una topología rectangular y $10X10$ neuronas (Tian recomienda usar $5 \sqrt{N_{muestras}}$ neuronas). Se recomienda una cantidad considerable de iteraciones de entrenamiento (al menos 10000).El mapa obtenido puede verse en la Figura \ref{fig:SOM}.
   \item UMAP: esta técnica aprende la estructura de variedad presente en los datos mediante un grafo y lo mapea a un grafo en otro espacio de menor cantidad de dimensiones. La proyección con los hiperparámetros por defecto produce clústeres razonables, como puede verse en la Figura \ref{fig:UMAP}
 \end{itemize}
@@ -452,7 +452,7 @@ Los algoritmos empleados con este propósito fueron:
 \subsubsection{Estrategia de entrenamiento y métricas de evaluación}
 Se separó un 20\% del conjunto de datos para ser utilizado como datos de prueba. En aquellos algoritmos donde se aplica, se utilizó una validación cruzada diviendo los datos de entrenamiento en cinco subconjuntos. Se muestreó aleatoriamente dado que los tipos de suelo están casi balanceados.
 
-Para evaluar la calidad de los modelos generados, se utilizaron matrices de confusión para poder visualizar qué clases se confundieron y en qué forma, así como la exactitud ya que no hay ninguna razón para priorizar si se encontraron verdaderos positivos o cuántos verdaderos positivos fueron actualmente recuperados. La exactitud se calculó en base al promedio de corridas con semillas diferentes (aunque empleando las mismas semillas para diferentes métodos de manera que los resultados sean comparables).
+Para evaluar la calidad de los modelos generados, se utilizaron matrices de confusión para poder visualizar qué clases se confundieron y en qué forma, así como la exactitud ya que no hay ninguna razón (inicialmente) para priorizar si se encontraron verdaderos positivos o cuántos verdaderos positivos fueron actualmente recuperados. La exactitud se calculó en base al promedio de corridas con semillas diferentes (aunque empleando las mismas semillas para diferentes métodos de manera que los resultados sean comparables).
 
 También se midió el tiempo de ejecución para poder comparar los costos de ejecución de cada algoritmo.
 %colocar comentario sobre tiempos de entrenamiento y clasificación
@@ -482,6 +482,7 @@ Los tiempos de entrenamiento de los algoritmos de reducción dimensional pueden 
 \begin{tabular}{|c|c|c|}
 \hline
 Algoritmo                        & Tiempo promedio[s] & Notas \\ \hline
+PCA                      & 1.364744 & 90 componentes      \\ \hline
 PCAR                      & 8,676014 & 90 componentes      \\ \hline
 UMAP                       & 2.841912 & Hiperparámetros por defecto \\ \hline
 SOM                       & 280.322036 & -      \\ \hline
@@ -492,7 +493,7 @@ SOM                       & 280.322036 & -      \\ \hline
 
 Los tiempos de entrenamiento y exactitudes promedio de los algoritmos de clasificación para diferentes configuraciones pueden verse en el Cuadro \ref{table:classifier}. 
 
-En el caso de QDA era imposible usar los datos sin aplicar una reducción dimensional (el algoritmo prohibe utilizar variables colineales por una cuestión de estabilidad numérica). 
+En el caso de QDA era imposible usar los datos sin aplicar una reducción dimensional y las dimensiones obtenidas mediante PCAR eran más que las posibles, así que se utilizaron menos componentes. 
 
 Los tiempos de entrenamiento para LightGBM con hiperparámetros optimizados consideran el tiempo de una corrida búsqueda de hiperpárametros. En la práctica se necesitan varias corridas por no ser obvio qué rango de hiperparámetros debe explorarse (o si se eligieron los correctos) así que los valores son una subestimación del tiempo total que fue necesario para entrenar los modelos.
 
@@ -502,10 +503,14 @@ Los tiempos de entrenamiento para LightGBM con hiperparámetros optimizados cons
 \hline
 Algoritmo  & Exactitud & Tiempo promedio[s] & Notas \\ \hline
 LDA      & 0,99375   & 32,114018     & - \\ \hline
+LDA      & 0,96875   & 0.064339     & PCA \\ \hline
 LDA      & 0,96875   & 0,042671     & PCAR \\ \hline
-QDA      & 0,91250   & 0,023746     & PCAR \\ \hline
+QDA      & 0.90625   & 0.015281     & PCA (23 componentes) \\ \hline
+QDA      & 0,91250   & 0,023746     & PCAR (23 componentes)\\ \hline
 LightGBM & 0,96250   & 4,238983     & Hiperparámetros por defecto \\ \hline
 LightGBM & 0,96875   & 1400,645764  & Optimizado \\ \hline
+LightGBM & 0.96250   & 0.102803     & PCA con hiperparámetros por defecto \\ \hline
+LightGBM & 0.96250   & 57.473760  & PCA Optimizado \\ \hline
 LightGBM & 0,93750   & 0,1091893     & PCAR con hiperparámetros por defecto \\ \hline
 LightGBM & 0,94375   & 54,161651  & PCAR Optimizado \\ \hline
 LightGBM & 0,93750   & 0,072268     & UMAP con hiperparámetros por defecto \\ \hline
@@ -518,7 +523,7 @@ LightGBM & 0,96250   & 122,837646  & SOM Optimizado \\ \hline
 \label{table:classifier}
 \end{table}
 
-En la Figura \ref{fig:classifier} pueden verse las matrices de confusión para los clasificadores en las semillas con los peores resultados. En principio no puede observarse ninguna clase con más errores que el resto. QDA, LightGBM-PCAR y LightGBM-UMAP son las que muestran los peores desempeños individuales.
+En la Figura \ref{fig:classifier} pueden verse las matrices de confusión para los clasificadores en las semillas con los peores resultados. En principio no puede observarse ninguna clase con muchos más errores que el resto. QDA, LightGBM-PCAR y LightGBM-UMAP son las que muestran los peores desempeños individuales.
 
 \begin{figure}[htbp]
     \centering
@@ -582,7 +587,7 @@ L_j (\mathbf{x}) = \mathbf{x} \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_j^T - \f
 
 Donde $\boldsymbol{\Sigma}$ es la matriz covarianza, $\boldsymbol{\mu}_j$ es la media del grupo $j$ y $\pi_j$ es la probabilidad a priori de pertenencia al grupo $j$.  
 
-Se estima el grupo al que pertenece una observación mediante $\hat{G}(\mathbf{x}) = \underset{j}{arg\,max} L_j (\mathbf{x})$. Aquellas regiones donde los discriminantes de diferentes clases son iguales conforman fronteras de decisión lineales.
+Se estima el grupo al que pertenece una observación mediante $\hat{G}(\mathbf{x}) = \underset{j}{arg\,max} L_j (\mathbf{x})$. Aquellas regiones donde los discriminantes de diferentes clases son iguales ($L_a(\mathbf{x}^*) = L_b(\mathbf{x}^*)$) conforman fronteras de decisión lineales.
 
 Es razonable suponer a la luz de los resultados de las diferentes corridas que distribuciones normales pueden aproximar las densidades de cada grupo de observaciones, así como que una estimación de la covarianza agrupada también sea una buena aproximación para las covarianzas de diferentes grupos. Pero sería deseable tener una idea de cuán terrible es asumir esto, y aún no explica adecuadamente qué es lo que ocurre con la colinealidad.
 
@@ -621,12 +626,12 @@ Las funciones discriminantes resultantes tras transformar los datos al espacio d
 L_j (\mathbf{x}^{*}) = \mathbf{x}^{*} {\boldsymbol{\mu}^{*}_j}^T - \frac{1}{2} ||\boldsymbol{\mu}^{*}_j||^2 + \log \pi_j
 \end{equation}
 
-En consecuencia, es más conveniente estudiar el problema de la normalidad y la homocedasticidad en el espacio transformado. En la Figura \ref{fig:LDAspace} pueden observarse los cuatro cúmulos correspondientes a los datos. Idealmente las distribuciones observadas tendrían intervalos de confianza del 95\% representados por esferas de radio 2 (cada cúmulo debería tener distribución $\mathcal{N}(\boldsymbol{\mu}^{*},I_3)$). Para los grupos 05\_01 y 12\_02 los outliers están algo dispersos, mientras que el grupo 09\_02 muestra una forma elipsoidal. Sin embargo, las clases están muy bien separadas en este espacio, lo cual significa que no se introduciría mucho error aproximando las distribuciones empíricas por distribuciones gaussianas ideales. La fuente del error sería mayoritariamente en aquellas observaciones que están lejos de los centros de los cúmulos y/o cerca de las fronteras de decisión entre clases. La tabla de confusión con el peor resultado observado de LDA en la Figura \ref{fig:classifier} muestra que una observación del grupo 05\_01 fue confundida por una de la clase 12\_02, debido a que estas dos clases son las más cercanas entre sí.
+En consecuencia, es más conveniente estudiar el problema de la normalidad y la homocedasticidad en el espacio transformado. En la Figura \ref{fig:LDAspace} pueden observarse los cuatro cúmulos correspondientes a los datos. Idealmente las distribuciones observadas tendrían intervalos de confianza del 95\% representados por esferas de radio 2 (consecuencia de la esferización o blanqueamiento de los datos como parte de la reducción dimensional). Para los grupos 05\_01 y 12\_02 los outliers están algo dispersos, mientras que el grupo 09\_02 muestra una forma elipsoidal. Sin embargo, las clases están muy bien separadas en este espacio, lo cual significa que no se introduciría mucho error aproximando las distribuciones empíricas por distribuciones gaussianas ideales. La fuente del error sería mayoritariamente en aquellas observaciones que están lejos de los centros de los cúmulos y/o cerca de las fronteras de decisión entre clase. La tabla de confusión con el peor resultado observado de LDA en la Figura \ref{fig:classifier} muestra que una observación del grupo 05\_01 fue confundida por una de la clase 12\_02, debido a que estas dos clases son las más cercanas entre sí (en la Figura \ref{fig:LDAspace} se puede ver que son pocos los puntos de esos dos grupos que caen sobre el plano o en el lado incorrecto).
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=14cm]{LDAspace.png}
-    \caption{\textbf{Espacio de variables canónicas.}}
+    \includegraphics[width=14cm]{LDAspace2.png}
+    \caption{\textbf{Espacio de variables canónicas.} El plano representa la frontera de decisión entre los grupos 05\_01 y 12\_02 ($L_{05\_01}(\mathbf{x}^*) = L_{12\_02}(\mathbf{x}^*)$)}
     \label{fig:LDAspace}
 \end{figure}
 
@@ -642,7 +647,7 @@ El fenómeno de autovalores pequeños es un problema también, pero la implement
 Q_j (\mathbf{x}^{*}) = - \frac{1}{2} ||(\mathbf{x}^{*} - {\mathbf{\mu}^{*}}_j) ||^2   - \frac{1}{2} \sum_p \log \lambda_{pj} + \log \pi_j
 \end{equation}
 
-Necesariamente hay que realizar un PCA antes de poder realizar un QDA, y se requiere que haya tantas muestras por grupo como variables\footnote{Esto es consecuencia de que, para una matriz de datos de  $j$ centrada $\mathbf{X}_C \in \mathbb{R}^{NXP}$, $rango(\hat{\boldsymbol{\Sigma}}_j) = rango(\mathbf{X}^T_C \mathbf{X}_C) = rango(\mathbf{X}_C) \le \min (N - 1,P)$ y la matriz inversa no existe si la matriz es deficiente en rango.} así que habrá un límite al número de componentes que pueda tomarse. 
+Necesariamente hay que realizar un PCA antes de poder realizar un QDA, y se requiere que haya tantas muestras por grupo como variables\footnote{Esto es consecuencia de que, para la matriz de datos del grupo $j$, centrada, $\mathbf{X}_C \in \mathbb{R}^{NXP}$, $rango(\hat{\boldsymbol{\Sigma}}_j) = rango(\mathbf{X}^T_C \mathbf{X}_C) = rango(\mathbf{X}_C) \le \min (N - 1,P)$ y la matriz inversa no existe si la matriz es deficiente en rango.} así que habrá un límite al número de componentes que pueda tomarse. 
 
 No solo no puede hacerse una reducción dimensional, sino que el número de parámetros del discriminante será más alto (aparte de que se tendrá menos observaciones para estimar cada matriz covarianza, lo cual empeorará la calidad de su estimación). Es por esta razón que QDA obtuvo peores predicciones que LDA a pesar de, en principio, ser más flexible como método.
 
@@ -662,13 +667,13 @@ f(\mathbf{x}) = \sum_{m = 1}^M c_m \mathds{1}_{\mathcal{R}_m}(\mathbf{x})
 
 donde $\mathcal{R}_m$ corresponde a una región rectangular y $\mathds{1}$ es la función indicadora.
 
-Varios intentos por optimizar los hiperparámetros del algoritmo no lograron mejorar los resultados obtenidos por defecto (el cual es competitivo con el uso de variables originales). La composición de los conjuntos de entrenamiento y prueba puede volverse fácilmente un problema. Es casi seguro haciendo suficientes particiones que se genere un conjunto de entrenamiento que no incluya una región específica, especialmente con un número limitado de observaciones. No ayuda que SOM no posee ninguna granularidad ya que sus resultados están ubicados en una grilla. Puede visualizarse el comportamiento del modelo generado por LightGBM y el conjunto de prueba para una de esas particiones en la Figura \ref{fig:BoundarySOM}.
+Varios intentos por optimizar los hiperparámetros del algoritmo no lograron mejorar los resultados obtenidos por defecto (el cual es competitivo con el uso de variables originales). La composición de los conjuntos de entrenamiento y prueba puede volverse fácilmente un problema. Es casi seguro haciendo suficientes particiones que se genere un conjunto de entrenamiento que no incluya una región específica, especialmente con un número limitado de observaciones. No ayuda que SOM no posee ninguna granularidad ya que sus resultados están ubicados en una grilla. Puede visualizarse el comportamiento del modelo generado por LightGBM y el conjunto de prueba a evaluar para una de esas particiones en la Figura \ref{fig:BoundarySOM}.
 
 \begin{figure}[htbp]
     \centering
     %\captionsetup{justification=centering}
     \includesvg[width=15cm]{Decision boundary SOM.svg}
-    \caption{\textbf{Frontera de decisión para mapas autoorganizados.}}
+    \caption{\textbf{Frontera de decisión para mapas autoorganizados.} También se grafican las clases reales del conjunto de prueba usado para su evaluación.}
     \label{fig:BoundarySOM}
 \end{figure}
 
@@ -676,15 +681,17 @@ Varios intentos por optimizar los hiperparámetros del algoritmo no lograron mej
 
 En el caso de UMAP, Puede verse en la Figura \ref{fig:UMAP} que la proyección realizada crea pequeños clústeres de puntos cercanos a cúmulos principales de otro color, casi seguro correspondientes a los outliers de cada grupo. Es muy fácil sobreajustar un clasificador aprendiendo esos puntos e introduciendo una frontera de decisión complicada. Aparte, dependiendo de cuáles de esos cúmulos entren en el conjunto de entrenamiento se tendrá mayor o menor dificultad generalizando.
 
-Esa es la razón por la cual fue necesario bajar la complejidad del modelo al realizar la búsqueda de hiperparámetros, aumentando la cantidad mínima de observaciones por hoja y añadiendo una regularización $L_1$. También se bajó la tasa de aprendizaje para reducir problemas de divergencia cuando la búsqueda se acerca cada vez más a uno de los mínimos. Puede verse la frontera de decisión del modelo optimizado para una partición específica en la Figura \ref{fig:BoundaryUMAP}.
+Esa es la razón por la cual fue necesario bajar la complejidad del modelo al realizar la búsqueda de hiperparámetros, aumentando la cantidad mínima de observaciones por hoja y añadiendo una regularización $L_1$. También se bajó la tasa de aprendizaje para reducir problemas de divergencia cuando la búsqueda se acerca cada vez más a uno de los mínimos. Puede verse la frontera de decisión del modelo optimizado y el conjunto de prueba para una partición específica en la Figura \ref{fig:BoundaryUMAP}.
 
 \begin{figure}[htbp]
     \centering
     %\captionsetup{justification=centering}
     \includesvg[width=15cm]{Decision boundary UMAP.svg}
-    \caption{\textbf{Frontera de decisión para aproximación y proyección uniforme de variedad.}}
+    \caption{\textbf{Frontera de decisión para aproximación y proyección uniforme de variedad.} También se grafican las clases reales del conjunto de prueba usado para su evaluación.}
     \label{fig:BoundaryUMAP}
 \end{figure}
+
+El uso de la regularización no ayudó con ninguno de las otras variantes de LightGBM (o inclusive fue perjudicial), confirmando el hecho de que el mapa generado por UMAP hizo mucho más fácil sobreajustar los modelos entrenados.
 
 En general, podría haber sido mejor si se hubiese hecho una búsqueda de hiperparámetros de los algoritmos de reducción dimensional (por ejemplo, haber utilizado un mayor número de dimensiones para realizar las proyecciones), aunque esto hubiese requerido de integrar el algoritmo a la etapa de validación cruzada, con el consecuente aumento del tiempo de entrenamiento y un tiempo adicional de desarrollo para implementarlo. También podría haber ayudado marginalmente omitir los outliers durante la etapa de entrenamiento, aunque si hubiesen estado presentes en el conjunto de prueba, estos pondrían un límite a la exactitud del clasificador de alguna forma u otra. 
 
@@ -692,14 +699,16 @@ A pesar de todos los problemas descritos en esta sección, SOM y UMAP puede que 
 
 \subsection{Efecto del análisis de componentes principales}
 
-Uno de los efectos más confusos observados en este trabajo fue el peor desempeño de todos los algoritmos al combinarlos con PCA robusto. Una explicación sencilla sería que se perdió información al reducir el número de dimensiones, pero en la sección de análisis discriminante se explicó que la implementación utilizada también incluye una reducción dimensional. Algunas otras razones (inclusive contradictorias entre sí) de las cuales se sospechan:
+Uno de los efectos más confusos observados en este trabajo fue el peor desempeño de todos los algoritmos al combinarlos con PCAR. Una explicación sencilla sería que se perdió información al reducir el número de dimensiones, pero en la sección de análisis discriminante se explicó que la implementación utilizada también incluye una reducción dimensional. Algunas otras razones (inclusive contradictorias entre sí) de las cuales se sospechan:
 
 \begin{itemize}
-    \item El PCA robusto fue demasiado conservativo, uno de los parámetros ($\alpha$) del algoritmo controla la cantidad de outliers que debería resistir y quizás el valor por defecto descartó demasiadas observaciones.
+    \item PCAR fue demasiado conservativo, uno de los parámetros ($\alpha$) del algoritmo controla la cantidad de outliers que debería resistir y quizás el valor por defecto descartó demasiadas observaciones. Sin embargo los resultados del PCA convencional (en general igual o peores, con excepción del LightGBM) hacen que sea poco probable.
     \item El uso de muchos componentes fue contraproductivo si no fueron estimados correctamente por cuestiones numéricas y de limitaciones del algoritmo. Se utilizaron muchos porque con el criterio de 90\% de la varianza explicada solo se elegía uno o dos componentes, y porque durante la realización de los experimentos todavía no se comprendía bien el problema de los autovalores pequeños. 
-    \item La implementación de LDA suprime los autovalores de $\hat{\boldsymbol{\Sigma}}$ que son más probables que generen problemas númericos durante la etapa en la que se calcula los autovalores de $\hat{\boldsymbol{\Sigma}}^{-1}\hat{\boldsymbol{\Sigma}}_B$ y quizás su criterio de selección de componentes en base a una tolerancia es mucho más razonable que el utilizado en el resto del trabajo. También puede que sea mejor aproximar esa matriz que eliminar dimensiones tras aplicar el PCA.
+    \item La implementación de LDA suprime los autovalores de $\hat{\boldsymbol{\Sigma}}$ que son más probables que generen problemas númericos durante la etapa en la que se calcula los autovalores de $\hat{\boldsymbol{\Sigma}}^{-1}\hat{\boldsymbol{\Sigma}}_B$ y quizás su criterio de selección de componentes en base a una tolerancia es mucho más razonable que el utilizado en el resto del trabajo. Aparte, solo tiene efecto en el cálculo de un inverso y no en la eliminación de ciertas dimensiones. Adicionalmente, el uso combinado con PCA implica una doble compresión de los datos.
     \item Es más fácil separar puntos en un espacio de mayor dimensión porque estos necesariamente van a estar más dispersos, en ese sentido quizás fue contraproductivo aplicar una reducción dimensional. Por otra parte, es más probable generar un modelo que sobreajuste de esta forma.
 \end{itemize}
+
+Es un poco ambiguo para esta aplicación si PCAR o PCA es mejor, quizás debido a que el número de outliers no es tan elevado.
 
 \subsection{Comparación general de desempeños}
 Los métodos clásicos de clasificación tuvieron mejores resultados (si solo se evalua la clasificación sin considerar los costos de entrenamiento y ejecución) que métodos modernos. Esto es casi seguramente a que los datos espectrales obtenidos no son difíciles de separar en el espacio, especialmente si se tienen las variables originales (porque los datos estarán más dispersos), por lo cual un modelo lineal es suficiente. Los modelos modernos (y también QDA) intercambian sesgo por varianza, o sea, transforman los datos a espacios más complejos y/o buscan fronteras decisión más complejas, pero esto solo induce un mayor error si un modelo simple ya minimizaba el error total casi por completo. 
@@ -718,7 +727,7 @@ Se analizaron las restricciones que tiene QDA en el número de variables que pue
 
 Adicionalmente se utilizó el PCA robusto para diagnosticar outliers y entender mejor la estructura de los datos utilizados. Su utilización como método de reducción dimensional presenta algunos inconvenientes no del todo entendidos.
 
-Como trabajo futuro, sería deseable estudiar más en detalle el uso de PCA como método de reducción dimensional para entender mejor sus limitaciones, así como también extender el trabajo a conjuntos de datos con estructuras más complicadas en donde los métodos modernos de aprendizaje automático sean más ventajosos. Los ensembles de árboles son hoy en día el estándar para trabajar con datos tabulares pero no tanto para datos espectrales, en vez de usar eso sería recomendable trabajar con redes neuronales.
+Como trabajo futuro, sería deseable estudiar más en detalle el uso de PCA como método de reducción dimensional para entender mejor sus limitaciones, así como también extender el trabajo a conjuntos de datos con estructuras más complicadas en donde los métodos modernos de aprendizaje automático sean más ventajosos. Los ensembles de árboles son hoy en día el estándar para trabajar con datos tabulares pero no tanto para datos espectrales, en vez de usar ese método sería recomendable trabajar con redes neuronales.
 \section{Código fuente}
 Los scripts utilizados en este trabajo pueden verse en el siguiente repositorio:
 
