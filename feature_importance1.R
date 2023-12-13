@@ -35,8 +35,9 @@ df_long <- df %>%
 df_long %>%
   ggplot(aes(x = Wavelength, y = Intensity)) + 
   geom_line() + 
-  geom_point(data = df_long1 %>% filter(Important == TRUE), aes(x = Wavelength, y = Intensity, color = Important)) +
-  theme(legend.position="none", text = element_text(size = 20))   
+  geom_point(data = df_long %>% filter(Important == TRUE), aes(x = Wavelength, y = Intensity, color = Important)) +
+  theme(legend.position="none", text = element_text(size = 20)) +
+  labs(x = "Longitud de onda (nm)",y = "Intensidad (a.u.)")
 
 # df_long1 <- df %>%
 #   filter(File == "M14_01.csv") %>%

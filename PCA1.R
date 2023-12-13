@@ -28,8 +28,9 @@ ggplot(data = data.frame(prop_variance_cum, pc = 1:156),
   labs(x = "Componente principal",
        y = "Prop. varianza explicada acumulada")
 
-autoplot(pca, data = df, colour = 'Group', alpha = 0.5)#, loadings = FALSE, 
+autoplot(pca, data = df, colour = 'Group', alpha = 0.5) + #, loadings = FALSE, 
          #loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 3)
+  theme(text = element_text(size = 20), legend.position="bottom") 
 
 pcar <- robpca(df %>% select(where(is.numeric)), k = 2)
 
@@ -47,7 +48,8 @@ ggplot(data = data.frame(prop_variance_cum_r, pc = 1:pcar$k),
 pcar$scores %>%
   ggplot(aes(x = PC1, y = PC2, color = df$Group)) +
   geom_point() +
-  labs(color = "Group")
+  labs(color = "Group") + 
+  theme(text = element_text(size = 20), legend.position="bottom") 
 
 #PCA por grupo
 #grupo 1

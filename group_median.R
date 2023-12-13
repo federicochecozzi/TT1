@@ -21,7 +21,8 @@ for (G in unique(df$Group)) {
     ggplot(aes(x = Wavelength, y = Intensity)) + 
     geom_line() +
     ylim(-10,2750) +
-    theme(text = element_text(size = 20)) 
+    theme(text = element_text(size = 20)) +
+    labs(x = "Longitud de onda (nm)",y = "Intensidad (a.u.)")
   print(p)
   dev.off()
 }
